@@ -1,0 +1,477 @@
+/Users/198101/www/cph/admin/public/index.html
+/Users/198101/www/cph/admin/public/styles.css
+/Users/198101/www/cph/admin/public/pictureData.json
+
+/Users/198101/www/cph/admin/app/App.js
+	imports ./DataContainer.js
+		imports ./Gallery_3.js
+			imports ./PictureList.js
+				imports ./Picture.js
+				Displays an expandable list of pictures or lists
+					imports ./PictureList.js
+					Displays picture, or another expandable list of pictures
+
+
+function to find child element by class name
+
+
+function getPictureDataInput(elements, name){
+	console.log(typeof(elements));
+	for (let element of elements) {
+		if (element.classList.contains(name)) {
+			return element;
+		}
+	}
+	return null;
+}
+
+var x = findChildByClass(document.getElementsByClassName('pictureData')[0].children, 'medium');
+console.log(x);
+
+=== Things that we need to be able to do ===
+add picture to gallery									Done
+add related pictures to picture							Done
+add sub-gallery to gallery								Done
+add gallery to galleries								Done
+
+delete picture from gallery								Done
+delete related pictures from picture 					Done
+delete sub-gallery from gallery							Done
+delete gallery from galleries							Done
+
+cut picture from gallery								Done
+cut picture w/sub or w/related from gallery				Done
+cut related pictures from picture 						
+cut sub-gallery from gallery							
+cut gallery from galleries								
+
+insert picture into gallery								Done
+insert picture w/sub or w/related into gallery			Done
+insert picture into top of gallery						Done
+insert picture w/sub or w/related into top of gallery	Done
+insert related pictures into picture 					
+insert sub-gallery into picture							
+insert gallery into galleries							
+
+
+upload image
+
+save changes to disk
+
+show selected image before save
+
+=== buttons and classes ===
+*** top level ***
+add new gallery			gn	display when no clipboard
+insert gallery			gn	display when clipboard picture -- yes, though it seems odd
+clear clipboard				display when clipboard
+
+*** Gallery Level ***
+add new picture			pn	display when no clipboard
+insert picture			pn	display when clipboard picture
+delete gallery			pn	display when no clipboard
+cut gallery				gn	display when no clipboard
+insert gallery			gn	display when clipboard gallery -- not sure if this is a good idea
+
+*** Picture Level ***
+save						display when data changes
+delete picture			pn	display when no clipboard
+cut picture				pn	display when no clipboard
+insert picture			pn	display when clipboard picture
+add new picture			pn	display when no clipboard
+add new rel. pictures	gn	display when no clipboard && no rel pic or subgallery
+add new subgallery		gn	display when no clipboard && no rel pic or subgallery
+insert as rel pic		gn	display when clipboard gallery && no rel pic or subgallery
+insert as subgallery	gn	display when clipboard gallery && no rel pic or subgallery
+
+cutPicture
+	set clipboardPicture
+
+cutGallery
+	set clipboardGallery
+
+cutSubGallery
+	set clipboardGallery
+
+
+
+<div class="picture">
+	<div class="title">
+		<div class="pictureSubSection">
+			<div> <img src="./galleryImages/th/speedDemons_th.jpg"> </div>
+			<div class="pictureData" data-path="0.pictures[0]">
+				<input class="title" type="text">
+				...
+			</div>
+			<div class="pictureList relatedPictures isClosed" data-path="0.pictures[0].relatedPictures">
+			</div>
+		</div>
+	</div>
+</div>
+
+
+===========================
+
+
+plain picture node
+	imageFile
+	fileSizes
+	title
+	medium
+	description
+
+picture node with related pictures:
+	imageFile
+	fileSizes
+	title
+	subTitle
+	medium
+	relatedPictures
+		picture node(s)
+
+sub-gallery node
+	imageFile
+	fileSizes
+	title
+	description
+	pictures
+		picture node(s)
+
+
+
+
+
+
+=== Current Data ===
+
+Top level gallery:
+	galleries.auto
+
+Picture in top level gallery:	
+	galleries.auto.pictures[0]
+
+Subgallery in top level gallery
+	galleries.auto.pictures[1].pictures
+
+Related pictures in top level gallery	
+	galleries.auto.pictures[0].relatedPictures
+
+Subgallery in subgallery of top level gallery
+	galleries.auto.pictures[1].pictures[0].pictures
+
+
+
+=== New Data Structure ===
+
+Top level gallery:
+	galleries[0]
+
+Picture in top level gallery:	
+	galleries[0].pictures[0]
+
+Subgallery in top level gallery
+	galleries[0].pictures[1].pictures
+
+Related pictures in top level gallery	
+	galleries[0].pictures[0].relatedPictures
+
+Subgallery in subgallery of top level gallery
+	galleries[0].pictures[1].pictures[0].pictures
+
+Picture in subgallery in top level gallery
+	galleries[0].pictures[1].pictures[0].pictures[0]
+ 	          0, pictures,1, pictures,0
+			  0, pictures,1, pictures
+
+
+1	saveModifiedPictureNode(event){
+		while(pathArray.length && node) {
+			node = node[pathArray.shift()];
+		}
+	
+	deletePictureNode(event){
+2		while(pathArray.length > 1 && node) {
+			node = node[pathArray.shift()];
+		}
+		var index = parseInt(pathArray[0]);
+		
+3	deleteGallery(event){
+		var index;
+		while(pathArray.length > 2 && node) {
+			index = pathArray.shift();
+			node = node[index];
+		}
+		index = parseInt(pathArray.shift(), 10);
+
+2a	deleteSubGallery(event){
+		while(pathArray.length > 1 && node) {
+			node = node[pathArray.shift()];
+		}
+		var index = pathArray[0];
+		
+	
+2	cutPictureNode(event){
+		while(pathArray.length > 1 && node) {
+			node = node[pathArray.shift()];
+		}
+		var index = parseInt(pathArray[0]);
+	
+2	insertPictureNode(event){
+		while(pathArray.length > 1 && node) {
+			node = node[pathArray.shift()];
+		}
+		var index = parseInt(pathArray[0]);
+	
+2	addNewPictureNode(event){
+		while(pathArray.length > 1 && node) {
+			node = node[pathArray.shift()];
+		}
+		var index = parseInt(pathArray[0]);
+	
+2	addNewTopPictureNode(event){
+		while(pathArray.length > 1 && node) {
+			node = node[pathArray.shift()];
+		}
+		var index = pathArray[0];
+	
+4	addNewRelatedPictures(event){
+		var index;
+		while(pathArray.length && node) {
+			index = pathArray.shift();
+			node = node[index];
+		}
+		index = parseInt(index, 10);
+	
+4	addNewSubGallery(event){
+		var index;
+		while(pathArray.length && node) {
+			index = pathArray.shift();
+			node = node[index];
+		}
+		index = parseInt(index, 10);
+
+
+
+1	saveModifiedPictureNode(event){
+		while(pathArray.length && node) {
+			node = node[pathArray.shift()];
+		}
+	// get last node
+	// index not needed
+
+	
+	deletePictureNode(event){
+2		while(pathArray.length > 1 && node) {
+			node = node[pathArray.shift()];
+		}
+		var index = parseInt(pathArray[0]);
+	// get 2nd to last node
+	// index is last
+
+3	deleteGallery(event){
+		var index;
+		while(pathArray.length > 2 && node) {
+			index = pathArray.shift();
+			node = node[index];
+		}
+		index = parseInt(pathArray.shift(), 10);
+
+4	addNewSubGallery(event){
+		var index;
+		while(pathArray.length && node) {
+			index = pathArray.shift();
+			node = node[index];
+		}
+		index = parseInt(index, 10);
+
+
+
+=====================================
+=== Nov 19 2016 ===
+
+Committed changes
+
+Most of admin page functionality works, including image upload.
+
+However, image upload is conventional JS, it does not use MV features of react. Also, it does
+not update the list of available images in the data object.
+
+Next step:
+Currently the list of images in the data object is hard-coded. It should be loaded from the API.
+
+Steps:
+
+1 -- load image data from API
+2 -- force reload of image data after image upload
+3 -- create place in data object for image upload data, and populate image preview etc from that
+4 -- after upload, clear image upload and refresh elements
+
+Nov 20 -- Modified API GET request to output jsonp like this:
+
+	<callback>({
+	   "SpanishVillage.jpg": "111",
+	   "artistInStudio.jpg": "110",
+	   ...
+
+"111" means that thumbnail, display & large are available
+"110" means that thumbnail, & display are available
+
+Next steps
+	1 -- force dataContainer.js to fetch the picture data from the API
+	2 -- modify picture.js to use the image data that is now in a different format
+
+
+=== Nove 25 ===
+I now get image file data from API. There are a lot of images, and it seems wasteful to 
+create a large drop down for every picture on the site, so I want to make it more efficient.
+
+1st try -- create one select element at the Gallery level. On each picture, I have a button
+that says "Select Image". When I click that button I copy the select and append it to the
+".picture" element (in the right place) and hide the button. There is a little hack to force
+new select to be open. This seems like an OK approach but it gets tricky when trying to make
+the input fields match the data.
+
+2nd try, if the 1st doesn't work, I will have the select, but it will only have one or two 
+options. When someone clicks on it, I will add all the other options.
+
+In either case I need hidden inputs for the size data.
+
+
+http://localhost:8080/galleryImages/th/chevyTruckTrainStation110_th.jpg"
+Line 68: ./galleryImages/th/johnnyWalker_th.jpg
+
+
+=== Directories ===
+
+/Users/198101/www/cph/
+D	admin
+D		app
+		node_modules
+		package.json
+D		public
+			pictureData.json	// data for Admin page
+			...
+		webpack.config.js
+D	cph_gallery
+		node_modules
+		readFiles.js
+		scripts					
+		uploadImage.html
+		uploadImage.js			// API
+		uploads					// no longer needed
+
+D	css
+	gallery.html				// public site
+	galleryImages
+		display					// picture images
+		large 					//    "      "
+		thumbnail				//    "      "
+D	images						// Generic Images for website
+D	scripts						// jQuery
+		jQuery
+		gallery.js				// main js for public site
+		galleryData.js			// data for public site
+	uploadImage.html			// test API
+
+SUMMARY:
+
+Main Page:
+	/www/cph/gallery.html
+gets data from:
+	/www/cph/scripts/galleryData.js
+
+Admin Page:
+	/www/cph/
+
+uploadImage.js
+	/www/cph/cph_gallery
+reads image data from:
+	/www/cph/galleryImages/
+uploads images to 
+	/www/cph/galleryImages/
+uploads page data to:
+	/www/cph/admin/public/pictureData.json
+
+
+
+========================================
+Connecting things in production:
+
+http://peterhelck.com/new/admin/public/index.html
+
+I get error for this, which is to get the list of files:
+http://127.0.0.1:8125/
+
+this is in dataContainer.js -- getImageFiles()
+
+in prod the endpoint is http://peterhelck.com/new/galleryImages/fileApi.php
+
+Admin app is running in ~/public_html/new/admin/public
+
+relative path: ../../galleryImages/fileApi.php
+
+pictureData.json
+it is being saved here:
+/home/thelck/public_html/new/galleryImages/pictureData.json
+
+and it is being read from here by App (DataContainer.js):
+/home/thelck/public_html/new/admin/public/pictureData.json
+http://peterhelck.com/new/admin/public/pictureData.json
+
+Line 466 	    return fetch('./pictureData.json')
+
+App is at /home/thelck/public_html/new/admin/public/, so relative path to other
+data file is:
+	../..//galleryImages/pictureData.json
+
+So change
+Line 466 	    return fetch('../../galleryImages/pictureData.json')
+
+
+
+the fileApi:
+/home/thelck/public_html/new/galleryImages/fileApi.php
+
+
+Node.s -- Formidable Module: https://www.sitepoint.com/creating-and-handling-forms-in-node-js/
+
+=========================================
+Gallery Site
+
+file:///Users/198101/www/cph/gallery.html
+	<script src="scripts/galleryData.js"></script>
+	<script src="scripts/gallery.js"></script>
+
+Data File
+file:///Users/198101/www/cph/scripts/galleryData.js
+
+
+http://peterhelck.com/new/galleryImages/thumbnail/spanishVillage.jpg
+
+
+=======================
+=== Admin Interface ===
+=======================
+DEV
+	APP
+	/Users/198101/www/cph/admin/
+	run "npm start"
+	http://localhost:8080/
+
+	API -- NODE VERSION
+	/Users/198101/www/cph/cph_gallery
+	node uploadImage.js
+
+	API Test Page:
+	/Users/198101/www/cph
+	http-server
+	http://127.0.0.1:8080/uploadImage.html
+
+PROD
+	APP
+	/home/thelck/public_html/new/admin/public/
+	http://peterhelck.com/new/admin/public/index.html
+
+	API
+	/home/thelck/public_html/new/galleryImages/fileApi.php
+	http://peterhelck.com/new/galleryImages/fileApi.php

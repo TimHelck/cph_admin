@@ -1,0 +1,109 @@
+How CPH Admin works
+
+index.html loads bundle.js
+
+in webpack_config.js:
+  entry:  __dirname + "/app/App.js",
+  output: {
+    path: __dirname + "/public",
+    filename: "bundle.js"
+  },
+
+-----------------------------------------------------------------------
+So start with App.js:
+
+import React, { Component } from 'react';
+import {render} from 'react-dom';
+import DataContainer from './DataContainer';
+
+render(<DataContainer />, document.getElementById('root'));
+
+-----------------------------------------------------------------------
+DataContainer.js
+
+...
+import Gallery from './Gallery';
+...
+class DataContainer extends Component {
+
+	constructor(props){
+		super(props);
+		this.state={ pictureData: {}};	
+		this.callbacks = {
+			saveModifiedPicture:     this.saveModifiedPicture.bind(this),
+			saveGalleryDescription:  this.saveGalleryDescription.bind(this),
+			...
+
+	// this function compares data AND updates it, so it needs a better name
+	hasDataChanged(stateData, inputs) {
+	...
+
+	saveModifiedPicture(event){
+	...
+
+	saveGalleryDescription(event) {
+	
+	saveGalleryDescription(event) {
+	...
+
+	saveAll() {
+	...
+
+
+	...
+
+	/* This reads pictureData.json which is the main source of data for cph_gallery. 
+	*  pictureData is added to "state", and passed into all the modules as props.
+	*  When users add, modify or delete galleries, pictures etc. the changes are 
+	*  are added to "state" and then written to pictureData.json by calling the 
+	*  function saveStateToDisk().
+	*/
+	loadPictureData() {
+	...
+
+	/* pictureData is part of "state" and it is saved in the pictureData.json file.
+	*  This function calls the cph_api to write to that file.
+	*/
+	saveStateToDisk(log){
+	...
+
+	mergeImageFileSizeData(data) {
+	...
+	
+
+	/* This gets the list of image files from the cph_api. It gets a list of file names
+	*  with ".jpg" stripped of, and 3 flags appended to indicate if image available as
+	*  thumbnail, display and large. Ex:
+	*      ...
+	*      "1942_01_PanamaDumpTruck111",
+	*      "1942_02_NightHaulAlbanyPost111",
+	*/
+	
+	getListOfImageFiles() {
+	...
+
+	componentDidMount(){
+		this.loadPictureData()
+		.then(this.getListOfImageFiles());
+	}
+	
+	
+	render() {
+		return (<Gallery 
+			galleries                       = {this.state.pictureData.galleries} 
+			imageData                       = {this.state.imageData} 
+			callbacks                       = {this.callbacks}
+			clipboardPicture                = {this.state.clipboardPicture} 
+			clipboardGallery                = {this.state.clipboardGallery} 
+		/> );
+		
+	}
+};
+
+export default DataContainer;
+
+-----------------------------------------------------------------------
+DataContainer.js 	imports Gallery
+Gallery.js 			imports PictureList
+PictureList.js	 	imports Picture
+Picture.js			imports PictureList
