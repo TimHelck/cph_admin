@@ -44,6 +44,8 @@ class PictureList extends Component {
 				longDescription = {picture.longDescription}
 				worklog         = {picture.worklog}
 				pubHistory      = {picture.pubHistory}
+				caption         = {picture.caption}
+				comment         = {picture.comment}
 				saleHistory     = {picture.saleHistory}
 
 				//imageFiles      = {this.props.imageFiles}		// remove, not used?

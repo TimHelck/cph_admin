@@ -253,6 +253,12 @@ div.showImageSelector select.hide {
 .relatedPictures,
 .subGallery {
 	margin-left:10px;
+	z-index: 100;
+}
+
+
+.subGallery .relatedPictures {
+	z-index: 200;
 }
 
 .pictureList.isClosed > h1:before {
@@ -364,25 +370,136 @@ div.gallery.clipboardGallery button.insert.galleryNode{
 	margin-top:10px;
 }
 .pictureData input,
+.pictureData span,
 .pictureData select,
 .pictureData textarea {
 	width:420px;
+}
+
+.pictureData span {
+	display:inline-block;
 }
 
 .pictureSubSection .pictureData .editPane {
 	display:none;
 }
 
+.subEditPaneContainer {
+	display:inline-block;
+}
+
+.subEditPane,
+.subEditError.inactive {
+	display:none;
+}
+
+.pictureData .hasEditPane span.display {
+	width:420px;
+	background-color: white;
+	color: #666;
+	border: 1px solid #222255;
+	padding: 5px;
+
+}
+
+.subEditPane .directions {
+	padding:4px;
+}
+.subEditError.active {
+    color: red;
+    font-weight: bold;
+	padding:4px;
+}
+
+.subEditError.active span {
+    color: #33B;
+    font-weight: normal;
+	padding:8px;
+}
+
+.subEditPane.active {
+	background-color: #eeeecc;
+	border:1px solid brown;
+	display:inline-block;
+	positionXXX:absolute;
+	top:-1px;
+	padding:3px;
+	z-index: 1000;
+}
+
+.pictureSubSection .pictureData .subEditPane div label  {
+	width:80px;
+	display:inline-block;
+
+}
+
+.subEditPane input {
+	width:260px;
+	display:inline-block;
+
+}
+
+.subEditPane .buttons{
+	width:360px;
+
+}
+
+button.subEditPane {
+	display:none;
+}
+
+button.subEditPane.active {
+	display: inline-block;
+	background-color: #eeeecc;
+	position:absolute;
+	bottom: 2px;
+	height: 20px;
+	z-index: 100;
+}
+
+div.hasEditPane {
+	borderX: red 1px solid;
+	position:relative;
+}
+.pictureSubSection .pictureData .editPane .display {
+	width: 380px;
+	background-color: #eeeeff;
+    border: 1px solid #333399;
+	color: #888;
+    padding: 3px;
+	min-height:15px;
+}
+
+.pictureSubSection .pictureData.active {
+	z-index:1000;
+}
+
 .pictureSubSection .pictureData.active .editPane {
 	display:block;
 	width:500px;
 	border:2px solid orange;
-	position:absolute;
+	positionXXX:absolute;
 	background-color:#ddddff;
 	padding:10px;
+	z-index:300;
 }
-.pictureSubSection .pictureData.active .editPane label {
+.pictureSubSection .pictureData .editPane label {
 	width:60px;
 	display:inline-block;
 }	
+
+/* gallery description */
+.twoColumn {
+  display: flex;
+}
+
+.twoColumn .column {
+  flex: 50%;
+  padding: 10px;
+}
+
+.twoColumn .column p {
+  padding: 5px 20px;
+  text-align: left;
+}
 

@@ -24,7 +24,8 @@ var config = {
     contentBase: "./public",
     colors: true,
     historyApiFallback: true,
-    inline: true
+    inline: true,
+	port: 5776
   },
 }
 console.log("Line 30: " + __dirname);

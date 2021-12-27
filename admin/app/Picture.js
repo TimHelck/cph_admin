@@ -1,32 +1,29 @@
 import React, { Component } from 'react';
 import PictureList from './PictureList';
+import SubEditPane from './SubEditPane';
 
 class Picture extends Component {
 	constructor() {
 		super();
-		this.handleSubmit = this.handleSubmit.bind(this);
 		this.state = { showEditPane: false };
 	}
 
-	handleSubmit(event){
-		var target = event.target ? event.target : event;
-		this.props.onUserSubmit(target);
-	}
-	
-	toggleDetails(e) {
-		this.setState({showDetails: !this.state.showDetails});
-		e.stopPropagation();
-	}
-	
+
 	toggleEditPane(e) {
 		this.setState({showEditPane: !this.state.showEditPane});
 		e.stopPropagation();
 	}
-	
+
 	render() {
 
 	    var subPictureList = "";
 	    var relatedPictureList = "";
+		var subEditPane_pubHistory = "";
+		var subEditPane_caption = "";
+		var subEditPane_comment = "";
+		var subEditPane_description = "";
+		var subEditPane_worklog = "";
+		var subEditPane_saleHistory = "";
 		var className = "picture";
 		if(this.props.pictures){
 
@@ -40,7 +37,6 @@ class Picture extends Component {
 				listType     = 'subGallery'
 				title        = {title}
 				description  = {this.props.description}
-				//imageFiles   = {this.props.imageFiles}		// remove, not used?
 				imageData    = {this.props.imageData}
 				gallery      = {this.props.pictures}
 				callbacks    = {this.props.callbacks}
@@ -61,7 +57,6 @@ class Picture extends Component {
 				listType     = 'relatedPictures'
 				title        = {title}
 				description  = {this.props.description}
-				//imageFiles   = {this.props.imageFiles}		// remove, not used?
 				imageData    = {this.props.imageData}
 				gallery      = {gallery}
 				callbacks    = {this.props.callbacks}
@@ -69,15 +64,47 @@ class Picture extends Component {
 			/>
 
 		}
+		
+		subEditPane_pubHistory = <SubEditPane
+			label        = 'pubHistory'
+			text         = {this.props.pubHistory}
+			isArrayField = 'true'
+		/>
+
+		subEditPane_caption = <SubEditPane
+			label        = 'caption'
+			text         = {this.props.caption}
+			isArrayField = 'false'
+		/>
+
+		subEditPane_comment = <SubEditPane
+			label        = 'comment'
+			text         = {this.props.comment}
+			isArrayField = 'false'
+		/>
+		
+		subEditPane_description = <SubEditPane
+			label        = 'description'
+			text         = {this.props.description}
+			isArrayField = 'false'
+		/>
+
+		subEditPane_worklog = <SubEditPane
+			label        = 'worklog'
+			text         = {this.props.worklog}
+			isArrayField = 'true'
+		/>
+
+		subEditPane_saleHistory = <SubEditPane
+			label        = 'saleHistory'
+			text         = {this.props.saleHistory}
+			isArrayField = 'true'
+		/>
+
 		var imageFile = this.props.imageFile;
 		var imageData = this.props.imageData;
 		var imgSrc = '../../galleryImages/thumbnail/' + imageFile + '.jpg';
-		// remove?
-		/*
-		if(document.location.host.match(/localhost/)) {
-			imgSrc = './newImageGallery/thumbnail/' + imageFile + '.jpg';
-		}
-		*/
+
 		let callbacks = this.props.callbacks;
 
 		// when page is initially loaded, the image dropdown only has the image from pictureData. 
@@ -94,8 +121,16 @@ class Picture extends Component {
 						<div> <img className='thImage' src={imgSrc} /> </div>
 						<div className='pictureData' data-path={this.props.path}>
 							<div><label>Title</label><input type='text' className='title'  defaultValue={this.props.title} autoComplete='off'/></div>
-							<div><label>Medium</label><input type='text' className='medium' defaultValue={this.props.medium} /></div>
 							<div><label>Desc.</label><input type='textarea' className='description'     defaultValue={this.props.description} /></div>
+						
+							{/*
+							<div className="hasEditPane">
+								<label>Description</label> 
+								<span className={'descriptionDisplay display'}>{this.props.description}</span>
+								{subEditPane_description}
+							</div>
+							*/}
+							
 							<div><label>Image</label><select className='imageFile' onClick={callbacks.showImageSelector} defaultValue={this.props.imageFile}>{options}</select></div>
 							<button onClick={callbacks.saveModifiedPicture} className='save'>Save</button>
 							<button onClick={callbacks.deletePicture} className='delete pictureNode'>Delete</button>
@@ -131,22 +166,48 @@ class Picture extends Component {
 								<div><label>Agency</label>   <input type='text' className='agency' defaultValue={this.props.agency} autoComplete='off'/></div>
 								<div><label>Date</label>     <input type='text' className='date'   defaultValue={this.props.date} autoComplete='off'/></div>
 								<div><label>Medium</label>   <input type='text' className='medium' defaultValue={this.props.medium} /></div>
+								<div><label>Desc.</label><input type='textarea' className='description'     defaultValue={this.props.description} /></div>
 								
-								<div><label>Desc.</label>    <textarea className='description'     rows={5} defaultValue={this.props.description} /></div>
-								<div><label>Desc2</label>    <input type='textarea' className='longDescription' rows={5} defaultValue={this.props.longDescription} /></div>
-								<div><label>Worklog</label>  <input type='textarea' className='worklog'         rows={3} defaultValue={this.props.worklog} /></div>
-								<div><label>Pub Hist</label> <input type='textarea' className='pubHistory'      rows={3} defaultValue={this.props.pubHistory} /></div>
-								<div><label>Sale Hist</label><input type='textarea' className='saleHistory'     rows={3} defaultValue={this.props.saleHistory} /></div>
+								<div className="hasEditPane">
+									<label>Caption</label> 
+									<span className={'captionDisplay display'}>{this.props.caption}</span>
+									{subEditPane_caption}
+								</div>
+								
+								<div className="hasEditPane">
+									<label>Comment</label> 
+									<span className={'commentDisplay display'}>{this.props.comment}</span>
+									{subEditPane_comment}
+								</div>
+																	
+								<div className="hasEditPane">
+									<label>Worklog</label> 
+									<span className={'worklogDisplay display'}>{this.props.worklog}</span>
+									{subEditPane_worklog}
+								</div>
+
+								<div className="hasEditPane">
+									<label>Pub History</label> 
+									<span className={'pubHistoryDisplay display'}>{this.props.pubHistory}</span>
+									{subEditPane_pubHistory}
+								</div>
+								
+								<div className="hasEditPane">
+									<label>Sale History</label> 
+									<span className={'saleHistoryDisplay display'}>{this.props.saleHistory}</span>
+									{subEditPane_saleHistory}
+								</div>
+								
 								<div><label>Image</label>    <select className='imageFile' onClick={callbacks.showImageSelector} defaultValue={this.props.imageFile}>{options}</select></div>
 								
 								<div className='buttons' onClick={this.toggleEditPane.bind(this)}>
 									<button onClick={callbacks.saveModifiedPicture}   className='save'>Save</button>
 									<button onClick={callbacks.deletePicture}         className='delete pictureNode'>Delete</button>
-									<button onClick={callbacks.cutPicture}            className='cut pictureNode'>Cut Picture</button>
+									<button onClick={callbacks.cutPicture}            className='cut    pictureNode'>Cut Picture</button>
 									<button onClick={callbacks.insertPicture}         className='insert pictureNode'>Insert Picture</button>
-									<button onClick={callbacks.addNewPicture}         className='add pictureNode'>Add New Picture</button>
-									<button onClick={callbacks.addNewRelatedPictures} className='add galleryNode'>Add Related Pictures</button>
-									<button onClick={callbacks.addNewSubGallery}      className='add galleryNode'>Add Sub-gallery</button>
+									<button onClick={callbacks.addNewPicture}         className='add    pictureNode'>Add New Picture</button>
+									<button onClick={callbacks.addNewRelatedPictures} className='add    galleryNode'>Add Related Pictures</button>
+									<button onClick={callbacks.addNewSubGallery}      className='add    galleryNode'>Add Sub-gallery</button>
 									<button onClick={callbacks.insertSubGallery}      className='insert galleryNode'>Insert Sub-gallery</button>
 									<button onClick={callbacks.insertRelatedPictures} className='insert galleryNode'>Insert Related Pictures</button>
 								</div>

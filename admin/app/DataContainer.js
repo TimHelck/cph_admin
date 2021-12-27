@@ -38,19 +38,16 @@ class DataContainer extends Component {
 
 	// this function compares data AND updates it, so it needs a better name
 	hasDataChanged(stateData, inputs) {
+//console.log("hasDataChanged Line 41");
 		var ret = false;
+		//delete stateData.subEditPaneInput;
 		for (let input of inputs) {
 			if(input.type !== "submit") {    // probably not needed anymore
 				for (let inputClassName of input.className.split(' ')) {
-					if(stateData[inputClassName] != null) {
+
+					
+					if(inputClassName !== 'subEditPane' && stateData[inputClassName] != null) {
 						if(stateData[inputClassName] !== input.value) {
-							if(inputClassName === "description") {
-								var x = isValidMarkup(input.value);
-console.log("Line 48: " + inputClassName);
-console.log("Line 49: " + x[0]);
-console.log("Line 50: " + x[1]);
-								
-							}
 							stateData[inputClassName] = input.value;
 							ret = true;
 						}
@@ -62,15 +59,18 @@ console.log("Line 50: " + x[1]);
 				}
 			}
 		}
+//console.log("hasDataChanged Line 62: " + ret);
 		return ret;
 	}
 
 	saveModifiedPicture(event){
-		var pn  = event.target.parentNode.parentNode;
+//console.log("saveModifiedPicture -- Line 66");
+
+		//var pn  = event.target.parentNode.parentNode;
+		var pn  = event.target.closest("div[data-path]");
 		var pnc = pn.querySelectorAll('input, textarea, select');
-		var pathArray = pn.parentNode.dataset.path.split(/\.|\[|\]/).filter(function(v){return v!==''});
+		var pathArray = pn.dataset.path.split(/\.|\[|\]/).filter(function(v){return v!==''});
 		var node = this.state.pictureData;
-console.log("Line 66: ", node);
 		// use pathArray to point node to the part of state.pictureData that has the
 		// (possibly) modified fields, then compare with the inputs in the DOM.
 		while(pathArray.length && node) {
@@ -84,8 +84,10 @@ console.log("Line 66: ", node);
 	}
 	
 	saveGalleryDescription(event) {
+//console.log("saveGalleryDescription -- Line 90");
 		var description = event.target.parentNode.children[0].value;
-		var pn  = event.target.parentNode.parentNode;
+		//var pn  = event.target.parentNode.parentNode;
+		var pn  = event.target.closest("div[data-path]");
 		var pathArray = pn.dataset.path.split(/\.|\[|\]/).filter(function(v){return v!==''});
 		var node = this.state.pictureData;
 		while(pathArray.length > 1 && node) {
@@ -98,21 +100,24 @@ console.log("Line 66: ", node);
 	}
 	
 	saveAll() {
+//console.log("saveAll -- Line 107");
 		this.setState({'pictureData': this.state.pictureData});
 		this.saveStateToDisk(false);
 	}
 
 
 	deletePicture(event){
-		var pn  = event.target.parentNode.parentNode.parentNode;
-console.log("Line 100: ", pn);
+//console.log("deletePicture -- Line 113");
+		//var pn  = event.target.parentNode.parentNode.parentNode;
+		var pn  = event.target.closest("div[data-path]");
+//console.log("Line 100: ", pn);
 		var pathArray = pn.dataset.path.split(/\.|\[|\]/).filter(function(v){return v!==''});
 		var node = this.state.pictureData;
 		while(pathArray.length > 1 && node) {
 			node = node[pathArray.shift()];
 		}
 		var index = parseInt(pathArray[0]);
-console.log("Line 107: " + index);
+//console.log("Line 107: " + index);
 		if(typeof index === 'number') {
 			node.splice(index, 1);
 			this.setState({'pictureData': this.state.pictureData});
@@ -121,7 +126,9 @@ console.log("Line 107: " + index);
 	}
 		
 	deleteGallery(event){
-		var pn  = event.target.parentNode.parentNode;
+//console.log("deleteGallery Line 132");
+		//var pn  = event.target.parentNode.parentNode;
+		var pn  = event.target.closest("div[data-path]");
 		if(typeof pn.dataset.path === 'undefined') { pn = pn.parentNode; }
 		var pathArray = pn.dataset.path.split(/\.|\[|\]/).filter(function(v){return v!==''});
 		var node = this.state.pictureData;
@@ -139,7 +146,9 @@ console.log("Line 107: " + index);
 	}
 
 	deleteSubGallery(event){
-		var pn  = event.target.parentNode.parentNode;
+//console.log("deleteSubGallery -- Line 152");
+		//var pn  = event.target.parentNode.parentNode;
+		var pn  = event.target.closest("div[data-path]");
 		if(typeof pn.dataset.path === 'undefined') { pn = pn.parentNode; }
 		var pathArray = pn.dataset.path.split(/\.|\[|\]/).filter(function(v){return v!==''});
 		var node = this.state.pictureData;
@@ -155,17 +164,19 @@ console.log("Line 107: " + index);
 	}
 	
 	cutPicture(event){
-		var pn  = event.target.parentNode.parentNode.parentNode;
+//console.log("cutPicture -- Line 170");
+		//var pn  = event.target.parentNode.parentNode.parentNode;
+		var pn  = event.target.closest("div[data-path]");
 		var pathArray = pn.dataset.path.split(/\.|\[|\]/).filter(function(v){return v!==''});
-console.log("Line 152: " , pn);
+//console.log("Line 152: " , pn);
 		var node = this.state.pictureData;
 		while(pathArray.length > 1 && node) {
 			node = node[pathArray.shift()];
 		}
 		var index = parseInt(pathArray[0]);
 		this.state.clipboardPicture = node[index];
-console.log("Line 158: " + index);
-console.log("Line 159: " , this.state.pictureData);
+//console.log("Line 158: " + index);
+//console.log("Line 159: " , this.state.pictureData);
 		if(typeof index === 'number') {
 			node.splice(index, 1);
 			this.setState({'pictureData': this.state.pictureData});
@@ -173,7 +184,9 @@ console.log("Line 159: " , this.state.pictureData);
 	} 
 	
 	cutGallery(event){
-		var pn  = event.target.parentNode.parentNode;
+//console.log("cutGallery -- Line 190");
+		//var pn  = event.target.parentNode.parentNode;
+		var pn  = event.target.closest("div[data-path]");
 		if(typeof pn.dataset.path === 'undefined') { pn = pn.parentNode; }
 		var pathArray = pn.dataset.path.split(/\.|\[|\]/).filter(function(v){return v!==''});
 		var node = this.state.pictureData;
@@ -193,7 +206,9 @@ console.log("Line 159: " , this.state.pictureData);
 	} 
 
 	cutSubGallery(event){
-		var pn  = event.target.parentNode.parentNode;
+//console.log("cutSubGallery -- Line 212");
+		//var pn  = event.target.parentNode.parentNode;
+		var pn  = event.target.closest("div[data-path]");
 		if(typeof pn.dataset.path === 'undefined') { pn = pn.parentNode; }
 		var pathArray = pn.dataset.path.split(/\.|\[|\]/).filter(function(v){return v!==''});
 		var node = this.state.pictureData;
@@ -211,8 +226,10 @@ console.log("Line 159: " , this.state.pictureData);
 	} 
 
 	insertPictureAtTop(event){
-		var pn  = event.target.parentNode.parentNode;
-console.log("Line 215: " , pn);
+//console.log("insertPictureAtTop -- Line 232");
+		//var pn  = event.target.parentNode.parentNode;
+		var pn  = event.target.closest("div[data-path]");
+//console.log("Line 215: " , pn);
 		if(typeof pn.dataset.path === 'undefined') { pn = pn.parentNode; }
 		var pathArray = pn.dataset.path.split(/\.|\[|\]/).filter(function(v){return v!==''});
 		var node = this.state.pictureData;
@@ -231,7 +248,9 @@ console.log("Line 215: " , pn);
 	} 
 
 	insertPicture(event){
-		var pn  = event.target.parentNode.parentNode.parentNode;
+//console.log("insertPicture -- Line 254");
+		//var pn  = event.target.parentNode.parentNode.parentNode;
+		var pn  = event.target.closest("div[data-path]");
 //console.log("Line 227: ", pn);
 		var pathArray = pn.dataset.path.split(/\.|\[|\]/).filter(function(v){return v!==''});
 		var node = this.state.pictureData;
@@ -254,8 +273,10 @@ console.log("Line 215: " , pn);
 	
 
 	insertSubGallery(event){
-		var pn  = event.target.parentNode.parentNode.parentNode;
-console.log("Line 227: ", pn);
+//console.log("insertSubGallery -- Line 279");
+		//var pn  = event.target.parentNode.parentNode.parentNode;
+		var pn  = event.target.closest("div[data-path]");
+//console.log("Line 227: ", pn);
 		var pathArray = pn.dataset.path.split(/\.|\[|\]/).filter(function(v){return v!==''});
 		var node = this.state.pictureData;
 		while(pathArray.length > 1 && node) {
@@ -271,7 +292,9 @@ console.log("Line 227: ", pn);
 	} 
 	
 	insertGallery(event){
-		var pn  = event.target.parentNode.parentNode;
+//console.log("insertGallery -- Line 297");
+		//var pn  = event.target.parentNode.parentNode;
+		var pn  = event.target.closest("div[data-path]");
 		if(typeof pn.dataset.path === 'undefined') { pn = pn.parentNode; }
 		var pathArray = pn.dataset.path.split(/\.|\[|\]/).filter(function(v){return v!==''});
 		var node = this.state.pictureData;
@@ -289,6 +312,7 @@ console.log("Line 227: ", pn);
 	} 
 
 	addNewGallery(event){
+//console.log("addNewGallery -- Line 318");
 		// this may not exactly be the React.js way of doing things.
 		var newGalleryName = document.getElementById("newGalleryTitle").value;
 		if(newGalleryName === '' || newGalleryName === 'REQUIRED FIELD') {
@@ -320,8 +344,10 @@ console.log("Line 227: ", pn);
 	} 
 
 	insertRelatedPictures(event){
-		var pn  = event.target.parentNode.parentNode.parentNode;
-console.log("Line 316: ", pn);
+//console.log("insertRelatedPictures -- Line 350");
+		//var pn  = event.target.parentNode.parentNode.parentNode;
+		var pn  = event.target.closest("div[data-path]");
+//console.log("Line 316: ", pn);
 		var pathArray = pn.dataset.path.split(/\.|\[|\]/).filter(function(v){return v!==''});
 		var node = this.state.pictureData;
 		while(pathArray.length > 1 && node) {
@@ -339,8 +365,11 @@ console.log("Line 316: ", pn);
 	} 
 	
 	addNewPicture(event){
-		var pn  = event.target.parentNode.parentNode.parentNode;
-console.log("Line 337: ");
+//console.log("addNewPicture -- Line 370");
+		//var pn  = event.target.parentNode.parentNode.parentNode;
+		var pn  = event.target.closest("div[data-path]");
+//console.log("Line 337: ", pn);
+//console.log("Line 338: ", event.target);
 		var pathArray = pn.dataset.path.split(/\.|\[|\]/).filter(function(v){return v!==''});
 		var node = this.state.pictureData;
 		while(pathArray.length > 1 && node) {
@@ -361,6 +390,8 @@ console.log("Line 337: ");
 				"longDescription": "",
 				"worklog": "",
 				"pubHistory": "",
+				"caption": "",
+				"comment": "",
 				"saleHistory": ""
 
 			};
@@ -370,8 +401,10 @@ console.log("Line 337: ");
 	}
 	
 	addNewTopPicture(event){
-		var pn  = event.target.parentNode.parentNode;
-console.log("Line 364: ", pn);
+//console.log("addNewTopPicture Line 406");
+		//var pn  = event.target.parentNode.parentNode;
+		var pn  = event.target.closest("div[data-path]");
+//console.log("Line 364: ", pn);
 		var pathArray = pn.dataset.path.split(/\.|\[|\]/).filter(function(v){return v!==''});
 		var node = this.state.pictureData;
 		while(pathArray.length > 1 && node) {
@@ -393,7 +426,9 @@ console.log("Line 364: ", pn);
 	}
 	
 	addNewRelatedPictures(event){
-		var pn  = event.target.parentNode.parentNode.parentNode;
+//console.log("addNewRelatedPictures -- Line 432");
+		//var pn  = event.target.parentNode.parentNode.parentNode;
+		var pn  = event.target.closest("div[data-path]");
 //console.log("Line 385: " ,  event.target);
 //console.log("Line 386: " ,  event.target.parentNode);
 //console.log("Line 387: " ,  event.target.parentNode.parentNode);
@@ -426,7 +461,9 @@ console.log("Line 364: ", pn);
 	}	
 	
 	addNewSubGallery(event){
-		var pn  = event.target.parentNode.parentNode.parentNode;
+//console.log("addnewSubGallery -- Line 467");
+		//var pn  = event.target.parentNode.parentNode.parentNode;
+		var pn  = event.target.closest("div[data-path]");
 		var pathArray = pn.dataset.path.split(/\.|\[|\]/).filter(function(v){return v!==''});
 		var node = this.state.pictureData;
 		var index;
@@ -454,6 +491,7 @@ console.log("Line 364: ", pn);
 	}	
 	
 	showImageSelector(event){
+//console.log("showImageSelector -- Line 498");
 		var n  = event.target;
 //console.log("Line 441: " + n.nodeName);
 //console.log(n);
@@ -466,7 +504,6 @@ console.log("Line 364: ", pn);
 
 		var n  = event.target;
 		if(n.nodeName === "SELECT") {		// if user clicks image drop-down
-console.log("Line 450");
 		let imgData = Object.keys(this.state.imageData) || [];
 //console.log(imgData);
 			imgData.map((imageFile, i) => {
@@ -489,7 +526,7 @@ console.log("Line 450");
 	setImage(event){
 		var t    = event.target;
 		if(t.nodeName === "OPTION") {			// I don't know how this is called
-console.log("Line 473 --= this was CALLED!!!");
+//console.log("Line 473 --= this was CALLED!!!");
 			var pn   = event.target.parentNode;
 			var ppn  = pn.parentNode;
 			var pppn  = ppn.parentNode;
@@ -516,12 +553,13 @@ console.log("Line 473 --= this was CALLED!!!");
 	*  function saveStateToDisk().
 	*/
 	loadPictureData() {
+//console.log("loadPictureData Line 561");
 	    var url = '../../galleryImages/pictureData.json';
 		if(document.location.host.match(/localhost/)|| document.location.host.match(/127.0.0.1/) ) {
 			url = './pictureData.json';
 			//url = './galleryImages/pictureData.json';
 		}
-		console.log("Line 524: " + url);
+		//console.log("Line 524: " + url);
  	    return fetch(url)
 		.then(response => response.json())
 		.then(responseData => this.setState({pictureData: responseData}))
@@ -532,6 +570,7 @@ console.log("Line 473 --= this was CALLED!!!");
 	*  This function calls the cph_api to write to that file.
 	*/
 	saveStateToDisk(log){
+//console.log("saveStateToDisk Line 573");
 		var url = 'http://127.0.0.1:8125/';
 
 		// merge imageData with pictureData so that image sizes will be set correctly:
@@ -554,6 +593,7 @@ console.log("Line 473 --= this was CALLED!!!");
 
 
 	mergeImageFileSizeData(data) {
+//console.log("mergeImageFileSizeData Line 596");
 		if(Array.isArray(data)) {
 			//console.log("Line 550 -- is array");
 			data.map((picture, i) => {
